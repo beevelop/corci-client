@@ -2,7 +2,9 @@
 var path = require('path');
 var Client = require('../lib/Client');
 
-var Common = require('corci-libs').Common;
+var libs = require('corci-libs');
+var Logger = libs.Logger;
+var Common = libs.Common;
 var yargs = Common.yargs;
 var fs = Common.fsExtra;
 
@@ -10,12 +12,20 @@ var patch = require('corci-libs').patch;
 // patch on to support binding with multiple events at once
 patch(process.EventEmitter.prototype, ["on", "addListener"]);
 
+Logger.addLevels({
+    client: 3
+}, {
+    client: 'magenta'
+});
+
 var conf = yargs
     .help('help')
-    .version('0.0.1', 'v')
+    .version('0.1.0', 'v')
     .alias('v', 'version')
     .showHelpOnFail(true)
-    .usage('Sends a build request to the corCI-master.\nUsage: $0\nAdditionally you can append platform-specific files by using the target name (e.g. android) as an argument.')
+    .usage('Sends a build request to the corCI-master.\n' +
+            'Usage: $0\nAdditionally you can append platform-specific f' +
+            'iles by using the target name (e.g. android) as an argument.')
     .options('p', {
         alias: 'port',
         default: 8000,
@@ -41,9 +51,9 @@ var conf = yargs
         describe: 'Path to directory where binaries should be stored (leave empty to not store binaries)'
     })
     .options('t', {
-        alias: 'target',
+        alias: ['platform', 'platforms'],
         default: 'autodetect',
-        describe: 'Define a target (e.g. android); use multiple times for multiple targets'
+        describe: 'Define a platform / target (e.g. android); use multiple times for multiple platforms'
     })
     .options('f', {
         alias: 'file',
@@ -64,24 +74,30 @@ var conf = yargs
         if (fs.existsSync(filePath)) {
             args.file = filePath;
         } else {
-            throw 'Error: file could not be found (note: the path has to be relative to your current working directory)';
+            throw 'Error: file could not be found ' +
+                    '(note: the path has to be relative ' +
+                    'to your current working directory)';
         }
     })
     .config('build.json') // should be optional
     .argv;
 
-// Convert conf.target to an array if it is a string
+// Convert conf.platforms to an array if it is a string
 // additionally split by comma to cover usage mistakes
-if (typeof conf.target === 'string') {
-    conf.target = conf.target.split(',');
+if (typeof conf.platforms === 'string') {
+    conf.platforms = conf.platforms.split(',');
 }
 
 // Assemble the master's socket url from the provided conf values
-conf.url = '{0}://{1}{2}/{3}'.format(conf.protocol, conf.host, conf.port === 80 ? '' : ':' + conf.port, 'client');
+conf.url = '{0}://{1}{2}/{3}'.format(
+    conf.protocol,
+    conf.host,
+    conf.port === 80 ? '' : ':' + conf.port,
+    'client'
+);
 
 if (!conf.location) {
     conf.save = false;
 }
 
 var client = new Client(conf);
-client.connect();
