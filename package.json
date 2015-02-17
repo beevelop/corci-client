@@ -1,10 +1,10 @@
 {
   "name": "corci-client",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "bin": "bin/cmd.js",
   "author": "Maik Hummel <yo@beevelop.com>",
   "dependencies": {
-    "corci-libs": "git://github.com/beevelop/corci-libs"
+    "corci-libs": "beevelop/corci-libs"
   },
   "devDependencies": {
     "grunt": "0.4.5",
