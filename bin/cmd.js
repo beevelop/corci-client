@@ -8,10 +8,6 @@ var Common = libs.Common;
 var yargs = Common.yargs;
 var fs = Common.fsExtra;
 
-var patch = require('corci-libs').patch;
-// patch on to support binding with multiple events at once
-patch(process.EventEmitter.prototype, ["on", "addListener"]);
-
 Logger.addLevels({
     client: 3
 }, {
@@ -26,6 +22,7 @@ var conf = yargs
     .usage('Sends a build request to the corCI-master.\n' +
             'Usage: $0\nAdditionally you can append platform-specific f' +
             'iles by using the target name (e.g. android) as an argument.')
+    .config('c')
     .options('p', {
         alias: 'port',
         default: 8000,
@@ -79,7 +76,6 @@ var conf = yargs
                     'to your current working directory)';
         }
     })
-    .config('build.json') // should be optional
     .argv;
 
 // Convert conf.platforms to an array if it is a string
