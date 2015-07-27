@@ -19,7 +19,7 @@ var conf = yargs
     .version('0.1.0', 'v')
     .alias('v', 'version')
     .showHelpOnFail(true)
-    .usage('Sends a build request to the corCI-master.\n' +
+    .usage('Sends a build request to the CorCI-master.\n' +
             'Usage: $0\nAdditionally you can append platform-specific f' +
             'iles by using the target name (e.g. android) as an argument.')
     .config('c')
